@@ -1,71 +1,168 @@
-[gd_scene load_steps=7 format=3 uid="uid://1msv6ycgghai"]
+[gd_scene format=3 uid="uid://1msv6ycgghai"]
 
-[ext_resource type="Texture2D" uid="uid://s2bbyk33byiy" path="res://assets/frog-doge-person.png" id="1_7j80i"]
-[ext_resource type="Texture2D" uid="uid://djmnuidun1pfh" path="res://assets/trava1.png" id="2_knife"]
-[ext_resource type="Script" uid="uid://dsp1vbka5ijsk" path="res://tscn/player.gd" id="3_player"]
-[ext_resource type="Script" path="res://tscn/player_melee.gd" id="4_melee"]
+[ext_resource type="Texture2D" uid="uid://brfu11ofdysg3" path="res://assets/dog-animaited-Sheet.png" id="2_6sl1v"]
+[ext_resource type="Texture2D" uid="uid://bwr12x5anxgf0" path="res://assets/dog-animaited-back-Sheet.png" id="3_hsluc"]
+[ext_resource type="Script" uid="uid://3e5q1xauqasb" path="res://tscn/player.gd" id="3_player"]
+[ext_resource type="Texture2D" uid="uid://q7li712p3gij" path="res://assets/Knife.png" id="4_1q7bi"]
+[ext_resource type="Script" uid="uid://csjgbwuddky2h" path="res://tscn/player_melee.gd" id="4_melee"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 15.336957
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3r7j"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(0, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h6470"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(64, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ne3il"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kai0q"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wxvsy"]
+atlas = ExtResource("3_hsluc")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nhqjh"]
+atlas = ExtResource("3_hsluc")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_udxxx"]
+atlas = ExtResource("3_hsluc")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6sl1v"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hsluc"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1q7bi"]
+atlas = ExtResource("2_6sl1v")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_88mv1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3r7j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h6470")
+}],
+"loop": true,
+"name": &"goback",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ne3il")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kai0q")
+}],
+"loop": true,
+"name": &"gofront",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wxvsy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nhqjh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_udxxx")
+}],
+"loop": true,
+"name": &"idleback",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6sl1v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hsluc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1q7bi")
+}],
+"loop": true,
+"name": &"idlefront",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_slash"]
+size = Vector2(59.33334, 26.333328)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
 radius = 18.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_slash"]
-size = Vector2(68, 32)
-
-[node name="player" type="CharacterBody2D"]
+[node name="player" type="CharacterBody2D" unique_id=881990775 node_paths=PackedStringArray("sprite")]
 scale = Vector2(3, 3)
-collision_layer = 1
 collision_mask = 0
 script = ExtResource("3_player")
+sprite = NodePath("GameVisual/Sprite2D")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1611868197]
 position = Vector2(-3, 2)
 limit_left = 2
 limit_top = 4
 limit_right = 4800
 limit_bottom = 2700
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=460802084]
 position = Vector2(0.33333334, -12.333334)
 shape = SubResource("CircleShape2D_body")
 
-[node name="GameVisual" type="Node2D" parent="."]
+[node name="GameVisual" type="Node2D" parent="." unique_id=1539726183]
 
-[node name="Sprite2D" type="Sprite2D" parent="GameVisual"]
-position = Vector2(0, -16.333332)
-texture = ExtResource("1_7j80i")
+[node name="Sprite2D" type="AnimatedSprite2D" parent="GameVisual" unique_id=581314970]
+position = Vector2(0, -16.333334)
+sprite_frames = SubResource("SpriteFrames_88mv1")
+animation = &"gofront"
+frame_progress = 0.36228397
 
-[node name="MeleePivot" type="Node2D" parent="."]
+[node name="MeleePivot" type="Node2D" parent="." unique_id=1260263408]
 
-[node name="MeleeHitbox" type="Area2D" parent="MeleePivot"]
+[node name="MeleeHitbox" type="Area2D" parent="MeleePivot" unique_id=4351630]
 collision_layer = 0
 collision_mask = 2
 monitoring = false
 monitorable = false
 
-[node name="Visual" type="Node2D" parent="MeleePivot/MeleeHitbox"]
+[node name="Visual" type="Node2D" parent="MeleePivot/MeleeHitbox" unique_id=1511873459]
 position = Vector2(28, 0)
 rotation = -1.5708
 
-[node name="Sprite2D" type="Sprite2D" parent="MeleePivot/MeleeHitbox/Visual"]
-rotation = 0.785398
-scale = Vector2(0.55, 0.2)
-texture = ExtResource("2_knife")
+[node name="Sprite2D" type="Sprite2D" parent="MeleePivot/MeleeHitbox/Visual" unique_id=2016270014]
+position = Vector2(13.99997, 7.6667175)
+rotation = 1.5671318
+scale = Vector2(0.6985967, 1.0426171)
+texture = ExtResource("4_1q7bi")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleePivot/MeleeHitbox"]
-position = Vector2(28, 0)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleePivot/MeleeHitbox" unique_id=1911711329]
+position = Vector2(29.66667, -13.666667)
+rotation = -3.1253085
 shape = SubResource("RectangleShape2D_slash")
 
-[node name="MeleeAttack" type="Node" parent="."]
+[node name="MeleeAttack" type="Node" parent="." unique_id=1729286585]
 script = ExtResource("4_melee")
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1444134645]
 collision_layer = 0
 collision_mask = 2
-monitoring = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=212489596]
 position = Vector2(0.33333334, -12.333334)
 shape = SubResource("CircleShape2D_hurt")

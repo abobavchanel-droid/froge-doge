@@ -1,4 +1,7 @@
 extends CharacterBody2D
+
+@export var sprite: AnimatedSprite2D
+
 ## Тело: GameVisual (Sprite2D или AnimatedSprite2D) + опционально GameVisual/AnimationPlayer.
 ## Ближний бой: узел MeleeAttack (player_melee.gd) и MeleePivot/MeleeHitbox/Visual — нож и анимация «slash».
 
@@ -18,10 +21,11 @@ var attack_speed_mult := 1.0
 signal lives_changed(current: int, maximum: int)
 signal died
 
-@onready var _sprite: Sprite2D = $GameVisual/Sprite2D
+@onready var _sprite: AnimatedSprite2D = $GameVisual/Sprite2D
 
 
 func _ready() -> void:
+	sprite.play("idlefront")
 	add_to_group("player")
 	var cam: Camera2D = $Camera2D
 	global_position = Vector2(
