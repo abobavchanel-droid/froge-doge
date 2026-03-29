@@ -1,41 +1,71 @@
-[gd_scene format=3 uid="uid://1msv6ycgghai"]
+[gd_scene load_steps=7 format=3 uid="uid://1msv6ycgghai"]
 
 [ext_resource type="Texture2D" uid="uid://s2bbyk33byiy" path="res://assets/frog-doge-person.png" id="1_7j80i"]
+[ext_resource type="Texture2D" uid="uid://djmnuidun1pfh" path="res://assets/trava1.png" id="2_knife"]
+[ext_resource type="Script" uid="uid://dsp1vbka5ijsk" path="res://tscn/player.gd" id="3_player"]
+[ext_resource type="Script" path="res://tscn/player_melee.gd" id="4_melee"]
 
-[sub_resource type="GDScript" id="GDScript_7j80i"]
-script/source = "extends CharacterBody2D
-
-const SPEED = 300
-
-func _physics_process(_delta):
-	# движение по осям
-	var direction_x = Input.get_axis(\"move_left\", \"move_right\")
-	var direction_y = Input.get_axis(\"move_up\", \"move_down\")
-	
-	velocity = Vector2(direction_x, direction_y) * SPEED
-	
-	# двигаем игрока
-	move_and_slide()
-"
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_7omxl"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
 radius = 15.336957
 
-[node name="player" type="CharacterBody2D" unique_id=1865145701]
-scale = Vector2(3, 3)
-script = SubResource("GDScript_7j80i")
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
+radius = 18.0
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=658320067]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_slash"]
+size = Vector2(68, 32)
+
+[node name="player" type="CharacterBody2D"]
+scale = Vector2(3, 3)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("3_player")
+
+[node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(-3, 2)
 limit_left = 2
 limit_top = 4
 limit_right = 4800
 limit_bottom = 2700
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1213578262]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.33333334, -12.333334)
-shape = SubResource("CircleShape2D_7omxl")
+shape = SubResource("CircleShape2D_body")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1995313096]
+[node name="GameVisual" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="GameVisual"]
 position = Vector2(0, -16.333332)
 texture = ExtResource("1_7j80i")
+
+[node name="MeleePivot" type="Node2D" parent="."]
+
+[node name="MeleeHitbox" type="Area2D" parent="MeleePivot"]
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+
+[node name="Visual" type="Node2D" parent="MeleePivot/MeleeHitbox"]
+position = Vector2(28, 0)
+rotation = -1.5708
+
+[node name="Sprite2D" type="Sprite2D" parent="MeleePivot/MeleeHitbox/Visual"]
+rotation = 0.785398
+scale = Vector2(0.55, 0.2)
+texture = ExtResource("2_knife")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleePivot/MeleeHitbox"]
+position = Vector2(28, 0)
+shape = SubResource("RectangleShape2D_slash")
+
+[node name="MeleeAttack" type="Node" parent="."]
+script = ExtResource("4_melee")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0.33333334, -12.333334)
+shape = SubResource("CircleShape2D_hurt")

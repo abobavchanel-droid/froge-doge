@@ -1,169 +1,24 @@
-[gd_scene format=3 uid="uid://xiilgu1jcndq"]
+[gd_scene load_steps=4 format=3 uid="uid://cw8enemy2dscene01"]
 
-[ext_resource type="Script" path="res://tscn/player.gd" id="1_fiwim"]
-[ext_resource type="Texture2D" uid="uid://brfu11ofdysg3" path="res://assets/dog-animaited-Sheet.png" id="2_omnov"]
-[ext_resource type="Texture2D" uid="uid://bwr12x5anxgf0" path="res://assets/dog-animaited-back-Sheet.png" id="3_5hk8j"]
-[ext_resource type="Texture2D" uid="uid://q7li712p3gij" path="res://assets/Knife.png" id="4_h6vjs"]
-[ext_resource type="Script" path="res://tscn/player_melee.gd" id="5_ribdr"]
+[ext_resource type="Script" path="res://tscn/enemy.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://s2bbyk33byiy" path="res://assets/frog-doge-person.png" id="2_sprite"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
-radius = 15.336957
+[sub_resource type="CircleShape2D" id="CircleShape2D_hit"]
+radius = 22.0
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8d387"]
-atlas = ExtResource("2_omnov")
-region = Rect2(0, 128, 64, 64)
+[node name="enemy" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_script")
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_mn4ff"]
-atlas = ExtResource("2_omnov")
-region = Rect2(64, 128, 64, 64)
+[node name="Visual" type="Node2D" parent="."]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_d2uin"]
-atlas = ExtResource("2_omnov")
-region = Rect2(0, 64, 64, 64)
+[node name="Sprite2D" type="Sprite2D" parent="Visual"]
+position = Vector2(0, -14)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("2_sprite")
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_bnc66"]
-atlas = ExtResource("2_omnov")
-region = Rect2(64, 64, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_uf0e4"]
-atlas = ExtResource("3_5hk8j")
-region = Rect2(0, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hegun"]
-atlas = ExtResource("3_5hk8j")
-region = Rect2(64, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_mn6q8"]
-atlas = ExtResource("3_5hk8j")
-region = Rect2(0, 64, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tfptk"]
-atlas = ExtResource("2_omnov")
-region = Rect2(0, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_k3nvp"]
-atlas = ExtResource("2_omnov")
-region = Rect2(64, 0, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_b7fts"]
-atlas = ExtResource("2_omnov")
-region = Rect2(128, 0, 64, 64)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_fco5v"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_8d387")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_mn4ff")
-}],
-"loop": true,
-"name": &"goBack",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_d2uin")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_bnc66")
-}],
-"loop": true,
-"name": &"goFront",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_uf0e4")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hegun")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_mn6q8")
-}],
-"loop": true,
-"name": &"stayBack",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tfptk")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_k3nvp")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_b7fts")
-}],
-"loop": true,
-"name": &"stayFront",
-"speed": 5.0
-}]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_slash"]
-size = Vector2(68, 32)
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
-radius = 14.000001
-
-[node name="player" type="CharacterBody2D" unique_id=1915971113]
-light_mask = 0
-scale = Vector2(3, 3)
-collision_mask = 6
-script = ExtResource("1_fiwim")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=804295510]
-position = Vector2(-3, 2)
-limit_left = 2
-limit_top = 4
-limit_right = 4800
-limit_bottom = 2700
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=626705650]
-visibility_layer = 6
-position = Vector2(0.33333334, -12.333334)
-shape = SubResource("CircleShape2D_body")
-
-[node name="GameVisual" type="Node2D" parent="." unique_id=1200757755]
-
-[node name="Sprite2D" type="AnimatedSprite2D" parent="GameVisual" unique_id=1374857070]
-position = Vector2(2, -17.333332)
-sprite_frames = SubResource("SpriteFrames_fco5v")
-animation = &"stayFront"
-frame_progress = 0.020656837
-
-[node name="MeleePivot" type="Node2D" parent="." unique_id=629697520]
-
-[node name="MeleeHitbox" type="Area2D" parent="MeleePivot" unique_id=658769446]
-collision_mask = 2
-monitoring = false
-monitorable = false
-
-[node name="Visual" type="Node2D" parent="MeleePivot/MeleeHitbox" unique_id=1702891852]
-position = Vector2(28, 0)
-rotation = -1.5708
-
-[node name="Sprite2D" type="Sprite2D" parent="MeleePivot/MeleeHitbox/Visual" unique_id=1147241515]
-position = Vector2(1.4632894, 3.106178)
-rotation = 3.1433892
-scale = Vector2(0.60064995, 0.96530783)
-texture = ExtResource("4_h6vjs")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleePivot/MeleeHitbox" unique_id=773117038]
-light_mask = 0
-visibility_layer = 4
-position = Vector2(28, 0)
-shape = SubResource("RectangleShape2D_slash")
-
-[node name="MeleeAttack" type="Node" parent="." unique_id=486809494]
-script = ExtResource("5_ribdr")
-
-[node name="Hurtbox" type="Area2D" parent="." unique_id=1218362121]
-collision_mask = 6
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=227794923]
-light_mask = 0
-position = Vector2(0.33333334, -12.333334)
-shape = SubResource("CircleShape2D_hurt")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -12)
+shape = SubResource("CircleShape2D_hit")

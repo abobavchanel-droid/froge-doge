@@ -1,112 +1,107 @@
-[gd_scene format=3 uid="uid://b7xqnr4ha6aaw"]
+[gd_scene load_steps=8 format=3 uid="uid://bqm7yxgame01"]
 
-[ext_resource type="Script" path="res://tscn/player.gd" id="1_740th"]
 [ext_resource type="PackedScene" uid="uid://1msv6ycgghai" path="res://tscn/player.tscn" id="1_qtm2r"]
-[ext_resource type="Script" path="res://tscn/back_grass.gd" id="2_back_grass"]
+[ext_resource type="Script" uid="uid://cdvy0fpigwhov" path="res://tscn/back_grass.gd" id="2_back_grass"]
 [ext_resource type="Texture2D" uid="uid://b3kridhlc2gqf" path="res://assets/background-trava.png" id="3_a7rub"]
 [ext_resource type="Script" path="res://tscn/pause_overlay.gd" id="4_pause"]
 [ext_resource type="Script" path="res://tscn/game_flow.gd" id="5_flow"]
 [ext_resource type="Script" path="res://tscn/hud.gd" id="6_hud"]
 [ext_resource type="Script" path="res://tscn/upgrade_ui.gd" id="7_upg"]
 [ext_resource type="Script" path="res://tscn/game_over_layer.gd" id="8_gov"]
-[ext_resource type="PackedScene" uid="uid://dqd86heb12oep" path="res://tscn/wall_gorizont.tscn" id="9_1dydg"]
 
-[node name="game" type="Node2D" unique_id=223848177]
+[node name="game" type="Node2D"]
 script = ExtResource("5_flow")
 
-[node name="wallGorizont" parent="." unique_id=414016515 instance=ExtResource("9_1dydg")]
-light_mask = 0
-visibility_layer = 4
-z_index = 10
-position = Vector2(-601, 134)
-
-[node name="back" type="Node2D" parent="." unique_id=1378622730]
+[node name="back" type="Node2D" parent="."]
 z_index = 1
 y_sort_enabled = true
 script = ExtResource("2_back_grass")
 
-[node name="EnemiesWorld" type="Node2D" parent="back" unique_id=1509781974]
+[node name="EnemiesWorld" type="Node2D" parent="back"]
 y_sort_enabled = true
 
-[node name="Pickups" type="Node2D" parent="back" unique_id=1115284922]
+[node name="Pickups" type="Node2D" parent="back"]
 y_sort_enabled = true
 
-[node name="player" parent="back" unique_id=359314460 instance=ExtResource("1_qtm2r")]
-light_mask = 0
-collision_mask = 6
-script = ExtResource("1_740th")
+[node name="player" parent="back" instance=ExtResource("1_qtm2r")]
 
-[node name="front" type="Node2D" parent="." unique_id=387922240]
+[node name="front" type="Node2D" parent="."]
 
-[node name="Sprite2D2" type="Sprite2D" parent="." unique_id=853562428]
+[node name="Sprite2D2" type="Sprite2D" parent="."]
 texture_repeat = 2
-position = Vector2(3611, 2008)
+position = Vector2(960, 543)
 scale = Vector2(3, 3)
 texture = ExtResource("3_a7rub")
 region_enabled = true
-region_rect = Rect2(0, 0, 2400, 1350)
+region_rect = Rect2(0, 0, 4800, 2700)
 
-[node name="HUD" type="CanvasLayer" parent="." unique_id=1290426693]
+[node name="HUD" type="CanvasLayer" parent="."]
 layer = 30
 script = ExtResource("6_hud")
 
-[node name="HUDRoot" type="MarginContainer" parent="HUD" unique_id=2061171809]
+[node name="HUDRoot" type="MarginContainer" parent="HUD"]
+anchors_preset = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 16.0
 offset_top = 14.0
 offset_right = 420.0
 offset_bottom = 168.0
 
-[node name="VBox" type="VBoxContainer" parent="HUD/HUDRoot" unique_id=993355321]
+[node name="VBox" type="VBoxContainer" parent="HUD/HUDRoot"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="LivesBar" type="ProgressBar" parent="HUD/HUDRoot/VBox" unique_id=836217375]
+[node name="LivesBar" type="ProgressBar" parent="HUD/HUDRoot/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 22)
 layout_mode = 2
 max_value = 2.0
-step = 1.0
 value = 2.0
 show_percentage = false
+step = 1.0
 
-[node name="XPBar" type="ProgressBar" parent="HUD/HUDRoot/VBox" unique_id=170229609]
+[node name="XPBar" type="ProgressBar" parent="HUD/HUDRoot/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 20)
 layout_mode = 2
 max_value = 10.0
 show_percentage = false
 
-[node name="XPLabel" type="Label" parent="HUD/HUDRoot/VBox" unique_id=21263377]
+[node name="XPLabel" type="Label" parent="HUD/HUDRoot/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "Ур. 1   0 / 10 XP"
 
-[node name="WaveLabel" type="Label" parent="HUD/HUDRoot/VBox" unique_id=439594345]
+[node name="WaveLabel" type="Label" parent="HUD/HUDRoot/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Волна 1"
 
-[node name="TimerLabel" type="Label" parent="HUD/HUDRoot/VBox" unique_id=1109761359]
+[node name="TimerLabel" type="Label" parent="HUD/HUDRoot/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "0 с"
 
-[node name="UpgradeUI" type="CanvasLayer" parent="." unique_id=1748184068]
+[node name="UpgradeUI" type="CanvasLayer" parent="."]
 layer = 70
 script = ExtResource("7_upg")
 
-[node name="UpDim" type="ColorRect" parent="UpgradeUI" unique_id=764357436]
+[node name="UpDim" type="ColorRect" parent="UpgradeUI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 0
 color = Color(0.05, 0.06, 0.08, 0.82)
 
-[node name="UpCenter" type="CenterContainer" parent="UpgradeUI" unique_id=1784323331]
+[node name="UpCenter" type="CenterContainer" parent="UpgradeUI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -114,48 +109,49 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 
-[node name="UpPanel" type="PanelContainer" parent="UpgradeUI/UpCenter" unique_id=940132540]
+[node name="UpPanel" type="PanelContainer" parent="UpgradeUI/UpCenter"]
 layout_mode = 2
 
-[node name="UpVBox" type="VBoxContainer" parent="UpgradeUI/UpCenter/UpPanel" unique_id=1417260588]
+[node name="UpVBox" type="VBoxContainer" parent="UpgradeUI/UpCenter/UpPanel"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="UpTitle" type="Label" parent="UpgradeUI/UpCenter/UpPanel/UpVBox" unique_id=880595508]
+[node name="UpTitle" type="Label" parent="UpgradeUI/UpCenter/UpPanel/UpVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Усиление (1 из 1)"
 horizontal_alignment = 1
 
-[node name="UpgradeButton1" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox" unique_id=1094161489]
+[node name="UpgradeButton1" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "…"
 
-[node name="UpgradeButton2" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox" unique_id=1777894568]
+[node name="UpgradeButton2" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "…"
 
-[node name="UpgradeButton3" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox" unique_id=2053834604]
+[node name="UpgradeButton3" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "…"
 
-[node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1925824029]
+[node name="GameOverLayer" type="CanvasLayer" parent="."]
 layer = 150
 script = ExtResource("8_gov")
 
-[node name="GODim" type="ColorRect" parent="GameOverLayer" unique_id=2006494317]
+[node name="GODim" type="ColorRect" parent="GameOverLayer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 0
 color = Color(0.06, 0.02, 0.02, 0.88)
 
-[node name="GOCenter" type="CenterContainer" parent="GameOverLayer" unique_id=446468158]
+[node name="GOCenter" type="CenterContainer" parent="GameOverLayer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -163,33 +159,34 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 
-[node name="GOVBox" type="VBoxContainer" parent="GameOverLayer/GOCenter" unique_id=1817871470]
+[node name="GOVBox" type="VBoxContainer" parent="GameOverLayer/GOCenter"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="GOLabel" type="Label" parent="GameOverLayer/GOCenter/GOVBox" unique_id=787344532]
+[node name="GOLabel" type="Label" parent="GameOverLayer/GOCenter/GOVBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Жизни закончились"
 horizontal_alignment = 1
 
-[node name="MenuButton" type="Button" parent="GameOverLayer/GOCenter/GOVBox" unique_id=502169388]
+[node name="MenuButton" type="Button" parent="GameOverLayer/GOCenter/GOVBox"]
 layout_mode = 2
 text = "В главное меню"
 
-[node name="PauseOverlay" type="CanvasLayer" parent="." unique_id=242438688]
+[node name="PauseOverlay" type="CanvasLayer" parent="."]
 layer = 100
 script = ExtResource("4_pause")
 
-[node name="Dim" type="ColorRect" parent="PauseOverlay" unique_id=943598510]
+[node name="Dim" type="ColorRect" parent="PauseOverlay"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 0
 color = Color(0, 0, 0, 0.55)
 
-[node name="Center" type="CenterContainer" parent="PauseOverlay" unique_id=1777279269]
+[node name="Center" type="CenterContainer" parent="PauseOverlay"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -197,24 +194,24 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 
-[node name="Panel" type="PanelContainer" parent="PauseOverlay/Center" unique_id=703169018]
+[node name="Panel" type="PanelContainer" parent="PauseOverlay/Center"]
 layout_mode = 2
 
-[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Center/Panel" unique_id=137138555]
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Center/Panel"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PauseLabel" type="Label" parent="PauseOverlay/Center/Panel/VBox" unique_id=2082922136]
+[node name="PauseLabel" type="Label" parent="PauseOverlay/Center/Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Пауза"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="PauseOverlay/Center/Panel/VBox" unique_id=149816309]
+[node name="ResumeButton" type="Button" parent="PauseOverlay/Center/Panel/VBox"]
 layout_mode = 2
 text = "Продолжить (Esc)"
 
-[node name="QuitButton" type="Button" parent="PauseOverlay/Center/Panel/VBox" unique_id=1230720928]
+[node name="QuitButton" type="Button" parent="PauseOverlay/Center/Panel/VBox"]
 layout_mode = 2
 text = "Выйти из игры"
 
