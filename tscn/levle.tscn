@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://c2sfwrsx63tb1"]
+
+[sub_resource type="GDScript" id="GDScript_3o00b"]
+script/source = "@tool
+extends Node2D
+
+# =====================
+# ПАРАМЕТРЫ
+# =====================
+@export var grass_scenes: Array[PackedScene] = []  # сюда Grass1 и Grass2
+@export var seed: int = 12345
+@export var noise_frequency: float = 0.05         # размер «кустов»
+@export var noise_threshold: float = 0.5          # плотность травы
+@export var tile_size: int = 32
+@export var map_width_px: int = 4800
+@export var map_height_px: int = 2700
+@export var spacing: float = 16                   # минимальное расстояние между травинками
+@export var cluster_jitter: float = 12            # смещение внутри тайла
+
+@export var generate_once: bool = false           # ставим true для генерации в редакторе
+
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
+# =====================
+# Генерация травы в редакторе
+# =====================
+func _process(delta):
+	if Engine.is_editor_hint() and generate_once:
+		rng.seed = seed
+		generate_grass()
+		generate_once = false  # выключаем, чтобы не генерировать снова
+		print(\"Grass generated in editor\")
+
+		# Сохраняем сцену в Godot 4
+		var root = get_tree().edited_scene_root
+		if root:
+			ResourceSaver.save(root, \"res://GeneratedLevel.tscn\")
+			print(\"Level saved as GeneratedLevel.tscn\")
+
+# =====================
+func generate_grass():
+	var width = int(map_width_px / tile_size)
+	var height = int(map_height_px / tile_size)
+
+	var noise = FastNoiseLite.new()
+	noise.seed = seed
+	noise.noise_type = FastNoiseLite.TYPE_PERLIN
+	noise.frequency = noise_frequency
+
+	for x in range(width):
+		for y in range(height):
+			var n = noise.get_noise_2d(x * noise_frequency, y * noise_frequency)
+			n = (n + 1.0) * 0.5  # нормализуем 0..1
+			if n > noise_threshold:
+				if rng.randf() < 0.5:  # шанс появления для редкости
+					spawn_grass(Vector2(x, y))
+
+# =====================
+func spawn_grass(grid_pos: Vector2):
+	var grass_scene = grass_scenes[rng.randi_range(0, grass_scenes.size() - 1)]
+	var grass = grass_scene.instantiate()
+
+	var offset = Vector2(
+		rng.randf_range(-cluster_jitter, cluster_jitter) + tile_size / 2,
+		rng.randf_range(-cluster_jitter, cluster_jitter) + tile_size / 2
+	)
+
+	var pos = grid_pos * tile_size + offset
+
+	# Проверка на минимальное расстояние
+	for child in get_children():
+		if child.position.distance_to(pos) < spacing:
+			return  # слишком близко — не ставим
+
+	grass.position = pos
+	add_child(grass)
+"
+
+[node name="levle" type="Node2D" unique_id=1360983834]
+script = SubResource("GDScript_3o00b")

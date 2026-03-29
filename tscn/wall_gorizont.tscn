@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dqd86heb12oep"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j63fo"]
+size = Vector2(8245, 143)
+
+[node name="wallGorizont" type="StaticBody2D" unique_id=414016515]
+light_mask = 7
+visibility_layer = 7
+collision_layer = 4
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1553608545]
+light_mask = 4
+visibility_layer = 3
+position = Vector2(4112.5, -61.5)
+shape = SubResource("RectangleShape2D_j63fo")

@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://1msv6ycgghai"]
+
+[ext_resource type="Texture2D" uid="uid://s2bbyk33byiy" path="res://assets/frog-doge-person.png" id="1_7j80i"]
+
+[sub_resource type="GDScript" id="GDScript_7j80i"]
+script/source = "extends CharacterBody2D
+
+const SPEED = 300
+
+func _physics_process(_delta):
+	# движение по осям
+	var direction_x = Input.get_axis(\"move_left\", \"move_right\")
+	var direction_y = Input.get_axis(\"move_up\", \"move_down\")
+	
+	velocity = Vector2(direction_x, direction_y) * SPEED
+	
+	# двигаем игрока
+	move_and_slide()
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7omxl"]
+radius = 15.336957
+
+[node name="player" type="CharacterBody2D" unique_id=1865145701]
+scale = Vector2(3, 3)
+script = SubResource("GDScript_7j80i")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=658320067]
+position = Vector2(-3, 2)
+limit_left = 2
+limit_top = 4
+limit_right = 4800
+limit_bottom = 2700
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1213578262]
+position = Vector2(0.33333334, -12.333334)
+shape = SubResource("CircleShape2D_7omxl")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1995313096]
+position = Vector2(0, -16.333332)
+texture = ExtResource("1_7j80i")

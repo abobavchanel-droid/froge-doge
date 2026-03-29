@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://d0ska558puan2"]
+
+[ext_resource type="PackedScene" uid="uid://1msv6ycgghai" path="res://tscn/player.tscn" id="1_qtm2r"]
+[ext_resource type="PackedScene" uid="uid://bwnmbn2relx0v" path="res://tscn/trava_1.tscn" id="2_qtm2r"]
+[ext_resource type="Texture2D" uid="uid://b3kridhlc2gqf" path="res://assets/background-trava.png" id="3_a7rub"]
+
+[sub_resource type="GDScript" id="GDScript_qtm2r"]
+
+[node name="main" type="Node2D" unique_id=1916417546]
+
+[node name="back" type="Node2D" parent="." unique_id=1927803206]
+z_index = 1
+y_sort_enabled = true
+script = SubResource("GDScript_qtm2r")
+
+[node name="player" parent="back" unique_id=1865145701 instance=ExtResource("1_qtm2r")]
+position = Vector2(960, 540)
+
+[node name="trava1" parent="back" unique_id=1542619916 instance=ExtResource("2_qtm2r")]
+position = Vector2(837, 406)
+
+[node name="front" type="Node2D" parent="." unique_id=1909706680]
+
+[node name="Sprite2D2" type="Sprite2D" parent="." unique_id=2025369966]
+texture_repeat = 2
+position = Vector2(960, 543)
+scale = Vector2(3, 3)
+texture = ExtResource("3_a7rub")
+region_enabled = true
+region_rect = Rect2(0, 0, 4800, 2700)
