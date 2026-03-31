@@ -3,7 +3,7 @@ extends CharacterBody2D
 ## Анимации: вместо Visual/Sprite2D можно поставить AnimatedSprite2D и AnimationPlayer
 ## с клипами idle / hit (и при желании death до queue_free в take_damage).
 
-@export var move_speed := 155.0
+@export var move_speed := 30
 @export var max_hp := 4
 @export var xp_reward := 4
 

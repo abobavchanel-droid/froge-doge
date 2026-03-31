@@ -9,9 +9,10 @@ height = 67.976906
 
 [node name="enemy" type="CharacterBody2D" unique_id=2130852472]
 collision_layer = 2
-collision_mask = 0
+collision_mask = 5
 motion_mode = 1
 script = ExtResource("1_script")
+move_speed = 155
 
 [node name="Visual" type="Node2D" parent="." unique_id=1891072039]
 

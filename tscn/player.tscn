@@ -110,7 +110,7 @@ radius = 18.0
 
 [node name="player" type="CharacterBody2D" unique_id=881990775 node_paths=PackedStringArray("sprite")]
 scale = Vector2(3, 3)
-collision_mask = 0
+collision_mask = 6
 script = ExtResource("3_player")
 sprite = NodePath("GameVisual/Sprite2D")
 
@@ -118,8 +118,8 @@ sprite = NodePath("GameVisual/Sprite2D")
 position = Vector2(-3, 2)
 limit_left = 2
 limit_top = 4
-limit_right = 4800
-limit_bottom = 2700
+limit_right = 3840
+limit_bottom = 2160
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=460802084]
 position = Vector2(0.33333334, -12.333334)

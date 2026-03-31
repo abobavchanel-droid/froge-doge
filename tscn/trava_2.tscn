@@ -5,6 +5,6 @@
 [node name="trava2" type="StaticBody2D" unique_id=1082636050]
 
 [node name="trava2" type="Sprite2D" parent="." unique_id=1983684575]
-position = Vector2(1, -20)
+position = Vector2(1, -22)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("1_385k6")

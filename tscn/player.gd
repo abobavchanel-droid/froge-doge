@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 @export var sprite: AnimatedSprite2D
 
-const BASE_SPEED := 350.0
+const BASE_SPEED := 350
 
 var speed_mult := 1.0
 var invuln_after_hit := 1.15
