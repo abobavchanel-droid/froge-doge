@@ -1,23 +1,71 @@
-[gd_scene load_steps=4 format=3 uid="uid://cxpckup001"]
+[gd_scene format=3 uid="uid://cxpckup001"]
 
-[ext_resource type="Script" path="res://tscn/xp_pickup.gd" id="1_xp"]
-[ext_resource type="Texture2D" uid="uid://djmnuidun1pfh" path="res://assets/trava1.png" id="2_gem"]
+[ext_resource type="Script" uid="uid://6ajhjp2jw7ql" path="res://tscn/xp_pickup.gd" id="1_xp"]
+[ext_resource type="Texture2D" uid="uid://dswvlbc12i6kh" path="res://assets/experience-banana-animated.png" id="2_gnmyb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2o5qr"]
+atlas = ExtResource("2_gnmyb")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ee20g"]
+atlas = ExtResource("2_gnmyb")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ojdne"]
+atlas = ExtResource("2_gnmyb")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8w7tg"]
+atlas = ExtResource("2_gnmyb")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f56ax"]
+atlas = ExtResource("2_gnmyb")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_20x0t"]
+atlas = ExtResource("2_gnmyb")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_trjce"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2o5qr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ee20g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ojdne")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8w7tg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f56ax")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_20x0t")
+}],
+"loop": true,
+"name": &"overflowing",
+"speed": 5.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 12.0
 
-[node name="xp_pickup" type="Area2D"]
+[node name="xp_pickup" type="Area2D" unique_id=1124839377 node_paths=PackedStringArray("sprite")]
 collision_layer = 0
-collision_mask = 1
-monitoring = true
-monitorable = true
 script = ExtResource("1_xp")
+sprite = NodePath("Visual/Sprite2D")
 
-[node name="Visual" type="Node2D" parent="."]
+[node name="Visual" type="Node2D" parent="." unique_id=2077520925]
 
-[node name="Sprite2D" type="Sprite2D" parent="Visual"]
-scale = Vector2(0.45, 0.45)
-texture = ExtResource("2_gem")
+[node name="Sprite2D" type="AnimatedSprite2D" parent="Visual" unique_id=504918853]
+sprite_frames = SubResource("SpriteFrames_trjce")
+animation = &"overflowing"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1294100557]
 shape = SubResource("CircleShape2D_1")

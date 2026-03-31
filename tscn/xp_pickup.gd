@@ -1,4 +1,7 @@
 extends Area2D
+
+@export var sprite: AnimatedSprite2D
+
 ## Кристалл опыта: свои спрайт/AnimatedSprite2D под Visual — замени в сцене.
 
 @export var magnet_range := 320.0
@@ -14,6 +17,7 @@ func configure(amount: int) -> void:
 
 
 func _ready() -> void:
+	sprite.play("overflowing")
 	body_entered.connect(_on_body_entered)
 
 
