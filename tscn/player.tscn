@@ -120,6 +120,15 @@ limit_left = 2
 limit_top = 4
 limit_right = 3840
 limit_bottom = 2160
+limit_smoothed = true
+position_smoothing_speed = 1.555
+rotation_smoothing_speed = 350.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.01
+drag_top_margin = 0.01
+drag_right_margin = 0.01
+drag_bottom_margin = 0.01
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=460802084]
 position = Vector2(0.33333334, -12.333334)
