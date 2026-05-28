@@ -10,6 +10,7 @@ const SAVE_PATH := "user://save_game.json"
 @onready var wall_layer: TileMapLayer = $"background-wall"
 @onready var hud: CanvasLayer = $HUD
 @onready var upgrade_ui: CanvasLayer = $UpgradeUI
+@onready var shop_ui = $ShopUI
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 
 var wave := 1
@@ -34,6 +35,8 @@ var _current_pick_index := 1
 var _spawn_rect := Rect2(120.0, 120.0, 4560.0, 2460.0)
 var _min_spawn_distance := 280.0
 var _autosave_accum := 0.0
+var coins := 0
+var shop_assortment_level := 0
 
 
 func _ready() -> void:
@@ -43,10 +46,13 @@ func _ready() -> void:
 	player.lives_changed.connect(hud.set_lives)
 	player.died.connect(_on_player_died)
 	upgrade_ui.upgrade_chosen.connect(_on_upgrade_chosen)
+	shop_ui.item_bought.connect(_on_shop_item_bought)
+	shop_ui.done_pressed.connect(_on_shop_done)
 	hud.set_lives(player.lives, player.max_lives)
 	hud.set_xp(xp, xp_needed, xp_level)
 	hud.set_wave_info(wave, wave_seconds_left)
 	hud.set_hp_regen(player.hp_regen_per_sec)
+	hud.set_coins(coins)
 	var loaded: bool = _load_progress()
 	if loaded:
 		phase = "wave"
@@ -58,6 +64,7 @@ func _ready() -> void:
 func add_xp(amount: int) -> void:
 	if amount <= 0 or phase != "wave":
 		return
+	coins += amount * 2
 	xp += amount
 	while xp >= xp_needed:
 		xp -= xp_needed
@@ -65,6 +72,7 @@ func add_xp(amount: int) -> void:
 		level_ups_this_wave += 1
 		xp_needed = _next_xp_needed(xp_level, xp_needed)
 	hud.set_xp(xp, xp_needed, xp_level)
+	hud.set_coins(coins)
 
 
 func spawn_xp_pickup(at: Vector2, amount: int) -> void:
@@ -122,7 +130,7 @@ func _finish_wave() -> void:
 	if _upgrade_picks_left > 0:
 		_open_next_upgrade_panel()
 	else:
-		_end_shop_phase()
+		_open_coin_shop()
 
 
 func _open_next_upgrade_panel() -> void:
@@ -138,15 +146,17 @@ func _on_upgrade_chosen(id: String) -> void:
 	else:
 		player.apply_upgrade(id, upg_power)
 	hud.set_hp_regen(player.hp_regen_per_sec)
+	hud.set_coins(coins)
 	_upgrade_picks_left -= 1
 	_current_pick_index += 1
 	if _upgrade_picks_left > 0:
 		_open_next_upgrade_panel()
 	else:
-		_end_shop_phase()
+		_open_coin_shop()
 
 
 func _end_shop_phase() -> void:
+	shop_ui.close_shop()
 	get_tree().paused = false
 	wave += 1
 	_save_progress()
@@ -241,6 +251,8 @@ func _save_progress() -> void:
 		"enemy_slow_mult": enemy_slow_mult,
 		"phase": phase,
 		"wave_seconds_left": wave_seconds_left,
+		"coins": coins,
+		"shop_assortment_level": shop_assortment_level,
 		"player_position": [player.global_position.x, player.global_position.y],
 		"player_lives": player.lives,
 		"player_max_lives": player.max_lives,
@@ -277,6 +289,8 @@ func _load_progress() -> bool:
 	enemy_slow_mult = float(data.get("enemy_slow_mult", enemy_slow_mult))
 	phase = String(data.get("phase", phase))
 	wave_seconds_left = float(data.get("wave_seconds_left", 0.0))
+	coins = int(data.get("coins", coins))
+	shop_assortment_level = int(data.get("shop_assortment_level", shop_assortment_level))
 
 	var arr: Variant = data.get("player_position", [player.global_position.x, player.global_position.y])
 	if arr is Array and arr.size() >= 2:
@@ -296,6 +310,7 @@ func _load_progress() -> bool:
 	hud.set_xp(xp, xp_needed, xp_level)
 	hud.set_wave_info(wave, wave_seconds_left)
 	hud.set_hp_regen(player.hp_regen_per_sec)
+	hud.set_coins(coins)
 	return true
 
 
@@ -343,3 +358,30 @@ func _enemy_damage_for_wave() -> int:
 
 func _enemy_xp_reward_for_wave() -> int:
 	return 3 + int((wave - 1) * 1.35)
+
+
+func _open_coin_shop() -> void:
+	phase = "shop"
+	shop_ui.open_shop(coins, shop_assortment_level)
+
+
+func _on_shop_item_bought(id: String, cost: int) -> void:
+	if cost <= 0 or coins < cost:
+		shop_ui.open_shop(coins, shop_assortment_level)
+		return
+	coins -= cost
+	var upg_power := _upgrade_power_scale()
+	if id == "spawn_slow":
+		spawn_interval_mult *= (1.12 + 0.03 * upg_power)
+	elif id == "enemy_slow":
+		enemy_slow_mult *= (0.93 - 0.02 * minf(1.0, (upg_power - 1.0) / 3.0))
+	else:
+		player.apply_upgrade(id, upg_power)
+	shop_assortment_level += 1
+	hud.set_hp_regen(player.hp_regen_per_sec)
+	hud.set_coins(coins)
+	shop_ui.open_shop(coins, shop_assortment_level)
+
+
+func _on_shop_done() -> void:
+	_end_shop_phase()

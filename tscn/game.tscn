@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://pw1mjk2igtjy" path="res://tscn/game_flow.gd" id="5_flow"]
 [ext_resource type="Script" uid="uid://crpgryp3yjp6t" path="res://tscn/hud.gd" id="6_hud"]
 [ext_resource type="Script" uid="uid://di65guhyoyhwh" path="res://tscn/upgrade_ui.gd" id="7_upg"]
+[ext_resource type="Script" path="res://tscn/shop_ui.gd" id="8_shop"]
 [ext_resource type="Texture2D" uid="uid://b2s1hxjepm81d" path="res://assets/grass-sprite-list.png" id="8_1dydg"]
 [ext_resource type="Script" uid="uid://bqwgrwfqp3u2r" path="res://tscn/game_over_layer.gd" id="8_gov"]
 [ext_resource type="Texture2D" uid="uid://bfoad2hwvqnfy" path="res://assets/backgroud-sprite-list.png" id="10_obm4e"]
@@ -116,17 +117,30 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "Ур. 1   0 / 10 XP"
 
-[node name="WaveLabel" type="Label" parent="HUD/HUDRoot/VBox" unique_id=803017664]
+[node name="CoinsLabel" type="Label" parent="HUD/HUDRoot/VBox" unique_id=915073664]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Волна 1"
+theme_override_font_sizes/font_size = 16
+text = "Монеты: 0"
 
 [node name="TimerLabel" type="Label" parent="HUD/HUDRoot/VBox" unique_id=558493202]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "0 с"
+
+[node name="WaveTopLabel" type="Label" parent="HUD" unique_id=211460617]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 12.0
+offset_right = 120.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 26
+text = "Волна 1"
+horizontal_alignment = 1
 
 [node name="UpgradeUI" type="CanvasLayer" parent="." unique_id=1140940501]
 layer = 70
@@ -182,6 +196,87 @@ text = "…"
 unique_name_in_owner = true
 layout_mode = 2
 text = "…"
+
+[node name="ShopUI" type="CanvasLayer" parent="." unique_id=164939299]
+layer = 80
+visible = false
+script = ExtResource("8_shop")
+
+[node name="ShopDim" type="ColorRect" parent="ShopUI" unique_id=1401775649]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.07, 0.09, 0.84)
+
+[node name="ShopCenter" type="CenterContainer" parent="ShopUI" unique_id=123874123]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ShopPanel" type="PanelContainer" parent="ShopUI/ShopCenter" unique_id=41599033]
+layout_mode = 2
+
+[node name="ShopVBox" type="VBoxContainer" parent="ShopUI/ShopCenter/ShopPanel" unique_id=110457212]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ShopTitle" type="Label" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763144]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Магазин за монеты"
+horizontal_alignment = 1
+
+[node name="ShopCoins" type="Label" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763145]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Монеты: 0"
+horizontal_alignment = 1
+
+[node name="ShopTier" type="Label" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763146]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Ассортимент #1"
+horizontal_alignment = 1
+
+[node name="ShopButton1" type="Button" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763147]
+unique_name_in_owner = true
+layout_mode = 2
+text = "..."
+
+[node name="ShopButton2" type="Button" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763148]
+unique_name_in_owner = true
+layout_mode = 2
+text = "..."
+
+[node name="ShopButton3" type="Button" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763149]
+unique_name_in_owner = true
+layout_mode = 2
+text = "..."
+
+[node name="ShopButton4" type="Button" parent="ShopUI/ShopCenter/ShopPanel/ShopVBox" unique_id=12763150]
+unique_name_in_owner = true
+layout_mode = 2
+text = "..."
+
+[node name="ShopDoneButton" type="Button" parent="ShopUI" unique_id=12763151]
+unique_name_in_owner = true
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -186.0
+offset_top = -72.0
+offset_right = -24.0
+offset_bottom = -24.0
+text = "Готово"
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=524006752]
 layer = 150

@@ -3,7 +3,8 @@ extends CanvasLayer
 @onready var _lives_bar: ProgressBar = %LivesBar
 @onready var _xp_bar: ProgressBar = %XPBar
 @onready var _xp_label: Label = %XPLabel
-@onready var _wave_label: Label = %WaveLabel
+@onready var _wave_label: Label = %WaveTopLabel
+@onready var _coins_label: Label = %CoinsLabel
 @onready var _timer_label: Label = %TimerLabel
 
 var _lives_value_label: Label
@@ -56,6 +57,10 @@ func set_xp(current: int, need: int, level: int) -> void:
 func set_wave_info(wave_num: int, seconds_left: float) -> void:
 	_wave_label.text = "Волна %d" % wave_num
 	_timer_label.text = "%d с" % maxi(0, int(ceil(seconds_left)))
+
+
+func set_coins(amount: int) -> void:
+	_coins_label.text = "Монеты: %d" % maxi(0, amount)
 
 
 func set_hp_regen(regen_per_sec: float) -> void:
