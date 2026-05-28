@@ -46,6 +46,7 @@ func _ready() -> void:
 	hud.set_lives(player.lives, player.max_lives)
 	hud.set_xp(xp, xp_needed, xp_level)
 	hud.set_wave_info(wave, wave_seconds_left)
+	hud.set_hp_regen(player.hp_regen_per_sec)
 	var loaded: bool = _load_progress()
 	if loaded:
 		phase = "wave"
@@ -62,7 +63,7 @@ func add_xp(amount: int) -> void:
 		xp -= xp_needed
 		xp_level += 1
 		level_ups_this_wave += 1
-		xp_needed = int(xp_needed * 1.22) + 4
+		xp_needed = _next_xp_needed(xp_level, xp_needed)
 	hud.set_xp(xp, xp_needed, xp_level)
 
 
@@ -74,6 +75,9 @@ func spawn_xp_pickup(at: Vector2, amount: int) -> void:
 
 
 func _process(delta: float) -> void:
+	if player and hud:
+		hud.set_hp_regen_preview(player.get_hp_visual_value(), player.max_lives)
+
 	_autosave_accum += delta
 	if _autosave_accum >= 2.0:
 		_autosave_accum = 0.0
@@ -126,12 +130,14 @@ func _open_next_upgrade_panel() -> void:
 
 
 func _on_upgrade_chosen(id: String) -> void:
+	var upg_power := _upgrade_power_scale()
 	if id == "spawn_slow":
-		spawn_interval_mult *= 1.15
+		spawn_interval_mult *= (1.12 + 0.03 * upg_power)
 	elif id == "enemy_slow":
-		enemy_slow_mult *= 0.92
+		enemy_slow_mult *= (0.93 - 0.02 * minf(1.0, (upg_power - 1.0) / 3.0))
 	else:
-		player.apply_upgrade(id)
+		player.apply_upgrade(id, upg_power)
+	hud.set_hp_regen(player.hp_regen_per_sec)
 	_upgrade_picks_left -= 1
 	_current_pick_index += 1
 	if _upgrade_picks_left > 0:
@@ -148,13 +154,16 @@ func _end_shop_phase() -> void:
 
 
 func _spawn_enemy() -> void:
-	var e: CharacterBody2D = ENEMY_SCENE.instantiate() as CharacterBody2D
-	var pos := _find_enemy_spawn_position()
-	e.global_position = pos
-	e.move_speed = 128.0 * (1.0 + (wave - 1) * 0.065) * enemy_slow_mult
-	e.max_hp = 3 + wave * 2
-	e.xp_reward = 3 + wave * 2
-	enemies_cont.add_child(e)
+	var count := _spawn_count_per_tick()
+	for _i in range(count):
+		var e := ENEMY_SCENE.instantiate()
+		var pos := _find_enemy_spawn_position()
+		e.global_position = pos
+		e.move_speed = _enemy_speed_for_wave()
+		e.max_hp = _enemy_hp_for_wave()
+		e.xp_reward = _enemy_xp_reward_for_wave()
+		e.contact_damage = _enemy_damage_for_wave()
+		enemies_cont.add_child(e)
 
 
 func _on_player_died() -> void:
@@ -239,7 +248,8 @@ func _save_progress() -> void:
 		"player_invuln_after_hit": player.invuln_after_hit,
 		"player_attack_damage_mult": player.attack_damage_mult,
 		"player_attack_speed_mult": player.attack_speed_mult,
-		"player_attack_knockback_mult": player.attack_knockback_mult
+		"player_attack_knockback_mult": player.attack_knockback_mult,
+		"player_hp_regen_per_sec": player.hp_regen_per_sec
 	}
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -281,9 +291,11 @@ func _load_progress() -> bool:
 	player.attack_damage_mult = float(data.get("player_attack_damage_mult", player.attack_damage_mult))
 	player.attack_speed_mult = float(data.get("player_attack_speed_mult", player.attack_speed_mult))
 	player.attack_knockback_mult = float(data.get("player_attack_knockback_mult", player.attack_knockback_mult))
+	player.hp_regen_per_sec = float(data.get("player_hp_regen_per_sec", player.hp_regen_per_sec))
 	hud.set_lives(player.lives, player.max_lives)
 	hud.set_xp(xp, xp_needed, xp_level)
 	hud.set_wave_info(wave, wave_seconds_left)
+	hud.set_hp_regen(player.hp_regen_per_sec)
 	return true
 
 
@@ -298,3 +310,36 @@ func _clear_progress() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		_save_progress()
+
+
+func _next_xp_needed(level: int, prev_need: int) -> int:
+	# Чуть более щадящая прогрессия: стабильнее выбиваются 2-3 апгрейда за волну.
+	var growth := 1.11 + minf(0.14, float(level) * 0.005)
+	var flat_add := 3 + int(level / 3)
+	return maxi(prev_need + 2, int(round(prev_need * growth)) + flat_add)
+
+
+func _upgrade_power_scale() -> float:
+	# Чем выше уровень, тем сильнее каждый апгрейд.
+	return 1.0 + float(maxi(0, xp_level - 1)) * 0.05
+
+
+func _spawn_count_per_tick() -> int:
+	# Рост плотности врагов с волнами, но чуть мягче.
+	return 1 + int((wave - 1) / 5)
+
+
+func _enemy_hp_for_wave() -> int:
+	return 4 + int(pow(float(wave), 1.22) * 1.8)
+
+
+func _enemy_speed_for_wave() -> float:
+	return (112.0 + float(wave - 1) * 7.4) * enemy_slow_mult
+
+
+func _enemy_damage_for_wave() -> int:
+	return 1 + int((wave - 1) / 6)
+
+
+func _enemy_xp_reward_for_wave() -> int:
+	return 3 + int((wave - 1) * 1.35)
