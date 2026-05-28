@@ -72,7 +72,10 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 		return
 	_hits_this_swing[body] = true
 	if body.has_method(&"take_damage"):
-		body.take_damage(_player.get_attack_damage())
+		var hit_dir := _player.global_position.direction_to(body.global_position)
+		if hit_dir.length_squared() < 0.00001:
+			hit_dir = Vector2.RIGHT
+		body.take_damage(_player.get_attack_damage(), hit_dir, _player.get_attack_knockback_force())
 
 
 func _play_attack_vfx() -> void:

@@ -2,10 +2,12 @@ extends Node2D
 
 const ENEMY_SCENE := preload("res://tscn/enemy.tscn")
 const XP_PICKUP_SCENE := preload("res://tscn/xp_pickup.tscn")
+const SAVE_PATH := "user://save_game.json"
 
 @onready var player: CharacterBody2D = $back/player
 @onready var enemies_cont: Node2D = $back/EnemiesWorld
 @onready var pickups_cont: Node2D = $back/Pickups
+@onready var wall_layer: TileMapLayer = $"background-wall"
 @onready var hud: CanvasLayer = $HUD
 @onready var upgrade_ui: CanvasLayer = $UpgradeUI
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
@@ -29,18 +31,27 @@ var level_ups_this_wave := 0
 var _upgrade_picks_left := 0
 var _pick_round_total := 0
 var _current_pick_index := 1
+var _spawn_rect := Rect2(120.0, 120.0, 4560.0, 2460.0)
+var _min_spawn_distance := 280.0
+var _autosave_accum := 0.0
 
 
 func _ready() -> void:
 	add_to_group("game_flow")
 	randomize()
+	_rebuild_spawn_rect()
 	player.lives_changed.connect(hud.set_lives)
 	player.died.connect(_on_player_died)
 	upgrade_ui.upgrade_chosen.connect(_on_upgrade_chosen)
 	hud.set_lives(player.lives, player.max_lives)
 	hud.set_xp(xp, xp_needed, xp_level)
 	hud.set_wave_info(wave, wave_seconds_left)
-	_start_wave()
+	var loaded: bool = _load_progress()
+	if loaded:
+		phase = "wave"
+		wave_seconds_left = maxf(1.0, wave_seconds_left)
+	else:
+		_start_wave()
 
 
 func add_xp(amount: int) -> void:
@@ -63,6 +74,11 @@ func spawn_xp_pickup(at: Vector2, amount: int) -> void:
 
 
 func _process(delta: float) -> void:
+	_autosave_accum += delta
+	if _autosave_accum >= 2.0:
+		_autosave_accum = 0.0
+		_save_progress()
+
 	if phase != "wave" or get_tree().paused:
 		return
 	wave_seconds_left -= delta
@@ -88,6 +104,7 @@ func _start_wave() -> void:
 
 func _finish_wave() -> void:
 	phase = "shop"
+	_save_progress()
 	get_tree().paused = true
 	for c in enemies_cont.get_children():
 		c.queue_free()
@@ -126,16 +143,13 @@ func _on_upgrade_chosen(id: String) -> void:
 func _end_shop_phase() -> void:
 	get_tree().paused = false
 	wave += 1
+	_save_progress()
 	_start_wave()
 
 
 func _spawn_enemy() -> void:
 	var e: CharacterBody2D = ENEMY_SCENE.instantiate() as CharacterBody2D
-	var ang := randf() * TAU
-	var dist := randf_range(420.0, 800.0)
-	var pos: Vector2 = player.global_position + Vector2.from_angle(ang) * dist
-	pos.x = clampf(pos.x, 120.0, 4680.0)
-	pos.y = clampf(pos.y, 120.0, 2580.0)
+	var pos := _find_enemy_spawn_position()
 	e.global_position = pos
 	e.move_speed = 128.0 * (1.0 + (wave - 1) * 0.065) * enemy_slow_mult
 	e.max_hp = 3 + wave * 2
@@ -144,5 +158,143 @@ func _spawn_enemy() -> void:
 
 
 func _on_player_died() -> void:
+	_clear_progress()
 	get_tree().paused = true
 	game_over_layer.visible = true
+
+
+func _rebuild_spawn_rect() -> void:
+	if wall_layer == null or wall_layer.tile_set == null:
+		return
+	var used: Rect2i = wall_layer.get_used_rect()
+	if used.size.x <= 2 or used.size.y <= 2:
+		return
+	var tile_size: Vector2i = wall_layer.tile_set.tile_size
+	var inner_origin := wall_layer.to_global(Vector2((used.position.x + 1) * tile_size.x, (used.position.y + 1) * tile_size.y))
+	var inner_size := Vector2((used.size.x - 2) * tile_size.x, (used.size.y - 2) * tile_size.y)
+	_spawn_rect = Rect2(inner_origin, inner_size)
+
+
+func _is_wall_at_world(pos: Vector2) -> bool:
+	var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+	var q := PhysicsPointQueryParameters2D.new()
+	q.position = pos
+	q.collision_mask = 4
+	q.collide_with_areas = false
+	q.collide_with_bodies = true
+	var hits: Array = space_state.intersect_point(q, 8)
+	return hits.size() > 0
+
+
+func _is_valid_enemy_spawn(pos: Vector2, check_player_distance: bool = true) -> bool:
+	if not _spawn_rect.has_point(pos):
+		return false
+	if _is_wall_at_world(pos):
+		return false
+	if check_player_distance and player and pos.distance_to(player.global_position) < _min_spawn_distance:
+		return false
+	return true
+
+
+func _find_enemy_spawn_position() -> Vector2:
+	# Равномерный случайный спавн по всему полю внутри стен.
+	for _i in range(120):
+		var rnd := Vector2(
+			randf_range(_spawn_rect.position.x, _spawn_rect.end.x),
+			randf_range(_spawn_rect.position.y, _spawn_rect.end.y)
+		)
+		if _is_valid_enemy_spawn(rnd):
+			return rnd
+	# Экстренный вариант: если не нашли с дистанцией до игрока, спавним в любом валидном месте поля.
+	for _k in range(72):
+		var safe_rnd := Vector2(
+			randf_range(_spawn_rect.position.x, _spawn_rect.end.x),
+			randf_range(_spawn_rect.position.y, _spawn_rect.end.y)
+		)
+		if _is_valid_enemy_spawn(safe_rnd, false):
+			return safe_rnd
+	return Vector2(
+		randf_range(_spawn_rect.position.x, _spawn_rect.end.x),
+		randf_range(_spawn_rect.position.y, _spawn_rect.end.y)
+	)
+
+
+func _save_progress() -> void:
+	if player == null:
+		return
+	var data: Dictionary = {
+		"wave": wave,
+		"xp": xp,
+		"xp_needed": xp_needed,
+		"xp_level": xp_level,
+		"level_ups_this_wave": level_ups_this_wave,
+		"spawn_interval_mult": spawn_interval_mult,
+		"enemy_slow_mult": enemy_slow_mult,
+		"phase": phase,
+		"wave_seconds_left": wave_seconds_left,
+		"player_position": [player.global_position.x, player.global_position.y],
+		"player_lives": player.lives,
+		"player_max_lives": player.max_lives,
+		"player_speed_mult": player.speed_mult,
+		"player_invuln_after_hit": player.invuln_after_hit,
+		"player_attack_damage_mult": player.attack_damage_mult,
+		"player_attack_speed_mult": player.attack_speed_mult,
+		"player_attack_knockback_mult": player.attack_knockback_mult
+	}
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(data))
+
+
+func _load_progress() -> bool:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return false
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		return false
+	var raw: String = file.get_as_text()
+	var parsed: Variant = JSON.parse_string(raw)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	var data: Dictionary = parsed
+
+	wave = int(data.get("wave", wave))
+	xp = int(data.get("xp", xp))
+	xp_needed = int(data.get("xp_needed", xp_needed))
+	xp_level = int(data.get("xp_level", xp_level))
+	level_ups_this_wave = int(data.get("level_ups_this_wave", 0))
+	spawn_interval_mult = float(data.get("spawn_interval_mult", spawn_interval_mult))
+	enemy_slow_mult = float(data.get("enemy_slow_mult", enemy_slow_mult))
+	phase = String(data.get("phase", phase))
+	wave_seconds_left = float(data.get("wave_seconds_left", 0.0))
+
+	var arr: Variant = data.get("player_position", [player.global_position.x, player.global_position.y])
+	if arr is Array and arr.size() >= 2:
+		var p := Vector2(float(arr[0]), float(arr[1]))
+		if _spawn_rect.has_point(p) and not _is_wall_at_world(p):
+			player.global_position = p
+
+	player.max_lives = int(data.get("player_max_lives", player.max_lives))
+	player.lives = clampi(int(data.get("player_lives", player.lives)), 1, player.max_lives)
+	player.speed_mult = float(data.get("player_speed_mult", player.speed_mult))
+	player.invuln_after_hit = float(data.get("player_invuln_after_hit", player.invuln_after_hit))
+	player.attack_damage_mult = float(data.get("player_attack_damage_mult", player.attack_damage_mult))
+	player.attack_speed_mult = float(data.get("player_attack_speed_mult", player.attack_speed_mult))
+	player.attack_knockback_mult = float(data.get("player_attack_knockback_mult", player.attack_knockback_mult))
+	hud.set_lives(player.lives, player.max_lives)
+	hud.set_xp(xp, xp_needed, xp_level)
+	hud.set_wave_info(wave, wave_seconds_left)
+	return true
+
+
+func _clear_progress() -> void:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return
+	var dir: DirAccess = DirAccess.open("user://")
+	if dir:
+		dir.remove("save_game.json")
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		_save_progress()

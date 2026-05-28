@@ -38,9 +38,13 @@ theme_override_font_sizes/font_size = 36
 text = "Frog Dog"
 horizontal_alignment = 1
 
-[node name="Play" type="Button" parent="CenterContainer/VBox"]
+[node name="Continue" type="Button" parent="CenterContainer/VBox"]
 layout_mode = 2
-text = "Начать игру"
+text = "Продолжить"
+
+[node name="NewGame" type="Button" parent="CenterContainer/VBox"]
+layout_mode = 2
+text = "Новая игра"
 
 [node name="Hint" type="Label" parent="CenterContainer/VBox"]
 layout_mode = 2
@@ -48,4 +52,5 @@ theme_override_colors/font_color = Color(0.65, 0.7, 0.65, 1)
 text = "Esc — пауза"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="CenterContainer/VBox/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="CenterContainer/VBox/Continue" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="CenterContainer/VBox/NewGame" to="." method="_on_new_game_pressed"]

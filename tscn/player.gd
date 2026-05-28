@@ -14,6 +14,8 @@ var attack_damage := 1
 var attack_damage_mult := 1.0
 var attack_cooldown_base := 0.5
 var attack_speed_mult := 1.0
+var attack_knockback_force := 210.0
+var attack_knockback_mult := 1.0
 
 signal lives_changed(current: int, maximum: int)
 signal died
@@ -34,7 +36,8 @@ func _ready() -> void:
 	$Hurtbox.body_entered.connect(_on_hurtbox_body_entered)
 
 	collision_layer = 1
-	collision_mask = 0
+	# Стены лежат в physics layer 4 (бит 3), чтобы игрок не проходил сквозь TileMapLayer стен.
+	collision_mask = 4
 
 
 func _physics_process(delta: float) -> void:
@@ -101,6 +104,10 @@ func get_attack_damage() -> int:
 	return maxi(1, int(round(attack_damage * attack_damage_mult)))
 
 
+func get_attack_knockback_force() -> float:
+	return attack_knockback_force * attack_knockback_mult
+
+
 func apply_upgrade(id: String) -> void:
 	match id:
 		"speed":
@@ -119,5 +126,7 @@ func apply_upgrade(id: String) -> void:
 			attack_damage_mult *= 1.14
 		"firerate":
 			attack_speed_mult *= 1.12
+		"knockback":
+			attack_knockback_mult *= 1.22
 		_:
 			pass

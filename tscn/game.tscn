@@ -178,6 +178,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "…"
 
+[node name="UpgradeButton4" type="Button" parent="UpgradeUI/UpCenter/UpPanel/UpVBox" unique_id=117471029]
+unique_name_in_owner = true
+layout_mode = 2
+text = "…"
+
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=524006752]
 layer = 150
 visible = false

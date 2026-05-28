@@ -6,8 +6,10 @@ extends CharacterBody2D
 @export var move_speed := 30
 @export var max_hp := 4
 @export var xp_reward := 4
+@export var knockback_decay := 900.0
 
 var _hp: int
+var _knockback_velocity := Vector2.ZERO
 
 @onready var _visual_root: Node2D = $Visual
 
@@ -17,18 +19,21 @@ func _ready() -> void:
 	_hp = max_hp
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var p: Node2D = get_tree().get_first_node_in_group("player") as Node2D
+	var chase_velocity := Vector2.ZERO
 	if p:
-		velocity = global_position.direction_to(p.global_position) * move_speed
-	else:
-		velocity = Vector2.ZERO
+		chase_velocity = global_position.direction_to(p.global_position) * move_speed
+	_knockback_velocity = _knockback_velocity.move_toward(Vector2.ZERO, knockback_decay * delta)
+	velocity = chase_velocity + _knockback_velocity
 	move_and_slide()
 
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, hit_dir: Vector2 = Vector2.ZERO, knockback_force: float = 0.0) -> void:
 	if amount <= 0:
 		return
+	if hit_dir.length_squared() > 0.00001 and knockback_force > 0.0:
+		_knockback_velocity += hit_dir.normalized() * knockback_force
 	_hp -= amount
 	_hit_feedback()
 	if _hp <= 0:
